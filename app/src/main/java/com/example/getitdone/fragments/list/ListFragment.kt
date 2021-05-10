@@ -9,9 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.ItemTouchHelper
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.*
 import com.example.getitdone.R
 import com.example.getitdone.data.models.ToDoData
 import com.example.getitdone.data.viewmodel.ToDoViewModel
@@ -61,7 +59,7 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
     private fun setUpRecyclerView(view: View) {
         val recyclerView = view.recyclerView
         recyclerView.adapter = adapter
-        recyclerView.layoutManager = LinearLayoutManager(requireActivity())
+        recyclerView.layoutManager = StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL)
         recyclerView.itemAnimator = SlideInUpAnimator().apply {
             addDuration = 300
         }
@@ -104,8 +102,10 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if(item.itemId == R.id.menu_delete_all) {
-            confirmRemoval()
+        when(item.itemId) {
+            R.id.menu_delete_all -> confirmRemoval()
+            R.id.menu_priorities_high -> mToDoViewModel.sortByHighPriority.observe(this, Observer { adapter.setData(it) })
+            R.id.menu_priorities_low -> mToDoViewModel.sortByLowPriority.observe(this, Observer { adapter.setData(it) })
         }
 
         return super.onOptionsItemSelected(item)
@@ -119,7 +119,6 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
         )
         snackBar.setAction("Undo") {
             mToDoViewModel.insertData(deletedItem)
-            adapter.notifyItemChanged(position)
         }
         snackBar.show()
     }
