@@ -1,22 +1,23 @@
-package com.example.getitdone.fragments.list
+package com.example.getitdone.fragments.list.adapter
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.navigation.findNavController
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.getitdone.R
 import com.example.getitdone.data.models.Priority
 import com.example.getitdone.data.models.ToDoData
+import com.example.getitdone.fragments.list.ListFragmentDirections
 import kotlinx.android.synthetic.main.fragment_add.view.*
 
 class ListAdapter : RecyclerView.Adapter<ListAdapter.MyViewHolder>() {
 
-    private var dataList = emptyList<ToDoData>()
+    var dataList = emptyList<ToDoData>()
 
     class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val titleTxt: TextView = itemView.findViewById(R.id.title_txt)
@@ -75,8 +76,14 @@ class ListAdapter : RecyclerView.Adapter<ListAdapter.MyViewHolder>() {
     }
 
     fun setData(toDoData: List<ToDoData>) {
+
+        val toDoDiffUtil = ToDoDiffUtil(dataList,toDoData)
+        val toDoDiffResult = DiffUtil.calculateDiff(toDoDiffUtil)
+
         this.dataList = toDoData
-        notifyDataSetChanged()
+        // very heavy compared to diffUtil
+        // notifyDataSetChanged()
+        toDoDiffResult.dispatchUpdatesTo(this)
     }
 
     override fun getItemCount(): Int = dataList.size
