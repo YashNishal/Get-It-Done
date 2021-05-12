@@ -15,6 +15,7 @@ import com.example.getitdone.data.viewmodel.ToDoViewModel
 import com.example.getitdone.fragments.SharedViewModel
 import com.example.getitdone.fragments.list.adapter.ListAdapter
 import com.example.getitdone.utils.hideKeyboard
+import com.example.getitdone.utils.observeOnce
 import com.google.android.material.snackbar.Snackbar
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator
 import kotlinx.android.synthetic.main.fragment_list.view.*
@@ -163,7 +164,7 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
 
     private fun searchThroughDatabase(query: String) {
         val searchQuery = "%$query%"
-        mToDoViewModel.searchDatabase(searchQuery).observe(this, { list->
+        mToDoViewModel.searchDatabase(searchQuery).observeOnce(viewLifecycleOwner, { list->
             list?.let {
                 adapter.setData(it)
             }
